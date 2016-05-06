@@ -4,6 +4,15 @@
   "port": "9987",
   "user": "ServerQuery user",
   "password": "ServerQuery password",
-  "json_file_indents": true,
-  "use_permission_string_ids": true
+  "backup": {
+    "backup_server_info": true,
+    "backup_channels": true,
+    "backup_bans": true,
+    "backup_server_groups": true,
+    "backup_channel_groups": true
+  },
+  "json": {
+    "use_file_indentation": true,
+    "use_permission_string_ids": true
+  }
 }
