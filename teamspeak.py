@@ -39,6 +39,30 @@ def connect(host, queryport, port, user, password, nickname):
 
     return tn
 
+
+def parse_objects(sq_objects):
+    json_objects = {}
+
+    sq_objects = sq_objects.split(" ")
+    for obj in sq_objects:
+        if "=" in obj:
+            obj = obj.split("=")
+            json_objects[obj[0]] = obj[1]
+        else:
+            json_objects[obj] = None
+
+    return json_objects
+
+
+def parse_list(sq_list):
+    json_list = []
+
+    sq_list = sq_list.split("|")
+    for item in sq_list:
+        json_list.append(item)
+
+    return json_list
+
 ###############################
 #                             #
 #  Teamspeak Query functions  #
@@ -99,21 +123,11 @@ def ban_delete(tn, ban_id):
 
 def ban_list(tn):
     bans = []
-    banlist = send_command(tn, "banlist")
-    banlist = banlist.split("|")
 
-    for ban_listing in banlist:
-        ban_listing = ban_listing.split(" ")
-        ban = {}
+    ban_listings = parse_list(send_command(tn, "banlist"))
 
-        for ban_info in ban_listing:
-            if "=" in ban_info:
-                ban_info = ban_info.split("=")
-                ban[ban_info[0]] = ban_info[1]
-            else:
-                ban[ban_info] = None
-
-        bans.append(ban)
+    for ban_listing in ban_listings:
+        bans.append(parse_objects(ban_listing))
 
     return bans
 
@@ -121,5 +135,6 @@ def ban_list(tn):
 def binding_list(tn):
     return send_command(tn, "bindinglist")
 
-def channel_list(tn):
-    return send_command
+
+def server_info(tn):
+    return parse_objects(send_command(tn, "serverinfo"))
