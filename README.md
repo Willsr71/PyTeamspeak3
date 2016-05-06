@@ -15,5 +15,10 @@ A variety of Python utilities for TeamSpeak ServerQuery
 |port|TeamSpeak port. Default is 9987|
 |user|ServerQuery user. Must have permissions|
 |password|ServerQuery user password|
-|json_file_indents|Whether to indent the output file or not|
+|backup_server_info|Whether to backup server info|
+|backup_channels|Whether to backup channels|
+|backup_bans|Whether to backup bans|
+|backup_server_groups|Whether to backup server groups|
+|backup_channel_groups|Whether to backup channel groups|
+|use_file_indentation|Whether to indent the output file or not|
 |use_permission_string_ids|Whether to use string ids for permissions instead or numeric ids|
