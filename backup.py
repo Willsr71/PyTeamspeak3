@@ -12,24 +12,12 @@ tn = teamspeak.connect(config["host"], config["queryport"], config["port"], conf
 # buf = teamspeak.send_command(tn, "help")
 # print(buf)
 
-# Bans
+backup_data["instance"] = None
+backup_data["channels"] = None
+backup_data["bans"] = teamspeak.ban_list(tn)
+backup_data["server_groups"] = None
+backup_data["channel_groups"] = None
 
-bans = []
-ban_list = teamspeak.ban_list(tn).split("|")
-for ban_listing in ban_list:
-    ban_listing = ban_listing.split(" ")
-    ban = {}
-
-    for ban_info in ban_listing:
-        if "=" in ban_info:
-            ban_info = ban_info.split("=")
-            ban[ban_info[0]] = ban_info[1]
-        else:
-            ban[ban_info] = None
-
-    bans.append(ban)
-backup_data["bans"] = bans
-
-file = teamspeak.set_json_file("backup-" + str(timestamp) + ".json", backup_data)
+file = teamspeak.set_json_file("backup-" + str(timestamp) + ".json", backup_data, config["json_file_indents"])
 teamspeak.quit(tn)
 tn.close()

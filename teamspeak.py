@@ -10,8 +10,13 @@ def get_json_file(file_name):
     return json.loads(open(file_name).read())
 
 
-def set_json_file(file_name, json_arr):
-    return open(file_name, 'w').write(json.dumps(json_arr, indent=2))
+def set_json_file(file_name, json_arr, indents):
+    if indents:
+        indents = 2
+    else:
+        indents = None
+
+    return open(file_name, 'w').write(json.dumps(json_arr, indent=indents))
 
 
 def rchop(thestring, ending):
@@ -103,8 +108,28 @@ def ban_delete(tn, ban_id):
 
 
 def ban_list(tn):
-    return send_command(tn, "banlist")
+    bans = []
+    banlist = send_command(tn, "banlist")
+    banlist = banlist.split("|")
+
+    for ban_listing in banlist:
+        ban_listing = ban_listing.split(" ")
+        ban = {}
+
+        for ban_info in ban_listing:
+            if "=" in ban_info:
+                ban_info = ban_info.split("=")
+                ban[ban_info[0]] = ban_info[1]
+            else:
+                ban[ban_info] = None
+
+        bans.append(ban)
+
+    return bans
 
 
 def binding_list(tn):
     return send_command(tn, "bindinglist")
+
+def channel_list(tn):
+    return send_command
