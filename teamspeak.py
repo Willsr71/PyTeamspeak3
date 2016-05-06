@@ -19,14 +19,7 @@ def set_json_file(file_name, json_arr, indents):
     return open(file_name, 'w').write(json.dumps(json_arr, indent=indents))
 
 
-def rchop(thestring, ending):
-    if thestring.endswith(ending):
-        return thestring[:-len(ending)]
-    return thestring
-
-
 def send_command(tn, command):
-    # This function clearly demonstrates my incredibly evident faith in self documenting code
     tn.write((command + "\n").encode('ascii'))
 
     message = ""
@@ -34,18 +27,15 @@ def send_command(tn, command):
         message += tn.read_until(b"\n\r").decode('ascii')
 
     return message[:message.index("error id=")]
-    # return rchop(rchop(tn.read_until(b"error id=0 msg=ok\n\r").decode('ascii'), "error id=0 msg=ok\n\r"), "\n\r")
 
 
-def connect(host, queryport, port, user, password):
+def connect(host, queryport, port, user, password, nickname):
     tn = telnetlib.Telnet(host, queryport)
 
-    buf = tn.read_until(b"command.\n\r")
-    buf = login(tn, user, password)
-    buf = use_port(tn, port)
-    # send_command(tn, "login client_login_name=" + user + " client_login_password=" + password)
-    # send_command(tn, "use port=" + port)
-    send_command(tn, "clientupdate client_nickname=EvilAutoModerator")
+    tn.read_until(b"command.\n\r")
+    login(tn, user, password)
+    use_port(tn, port)
+    send_command(tn, "clientupdate client_nickname=" + nickname)
 
     return tn
 

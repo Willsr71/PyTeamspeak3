@@ -9,7 +9,7 @@ def get_client_by_name(username):
             return client
 
 config = teamspeak.get_json_file("configenjin.json")
-tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"])
+tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "EvilAutoModerator")
 clients = []
 
 clientsarr = teamspeak.send_command(tn, "clientlist")
