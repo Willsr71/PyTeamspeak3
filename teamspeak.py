@@ -135,6 +135,31 @@ def binding_list(tn):
     return send_command(tn, "bindinglist")
 
 
+def channel_group_list(tn):
+    channel_listings = parse_list(send_command(tn, "channelgrouplist"))
+
+    groups = []
+    for channel_listing in channel_listings:
+        groups.append(parse_objects(channel_listing))
+
+    return groups
+
+
+def channel_group_permission_list(tn, channel_group_id, use_string_id=True):
+    if use_string_id:
+        use_string_id = " -permsid"
+    else:
+        use_string_id = ""
+
+    permission_listings = parse_list(send_command(tn, "channelgrouppermlist cgid=" + channel_group_id + use_string_id))
+
+    permissions = []
+    for permission_listing in permission_listings:
+        permissions.append(parse_objects(permission_listing))
+
+    return permissions
+
+
 def server_info(tn):
     return parse_objects(send_command(tn, "serverinfo"))
 
