@@ -122,10 +122,9 @@ def ban_delete(tn, ban_id):
 
 
 def ban_list(tn):
-    bans = []
-
     ban_listings = parse_list(send_command(tn, "banlist"))
 
+    bans = []
     for ban_listing in ban_listings:
         bans.append(parse_objects(ban_listing))
 
@@ -141,11 +140,25 @@ def server_info(tn):
 
 
 def server_group_list(tn):
-    groups = []
-
     group_listings = parse_list(send_command(tn, "servergrouplist"))
 
+    groups = []
     for group_listing in group_listings:
         groups.append(parse_objects(group_listing))
 
     return groups
+
+
+def server_group_permission_list(tn, server_group_id, use_string_id=True):
+    if use_string_id:
+        use_string_id = " -permsid"
+    else:
+        use_string_id = ""
+
+    permission_listings = parse_list(send_command(tn, "servergrouppermlist sgid=" + server_group_id + use_string_id))
+
+    permissions = []
+    for permission_listing in permission_listings:
+        permissions.append(parse_objects(permission_listing))
+
+    return permissions

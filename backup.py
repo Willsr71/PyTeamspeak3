@@ -18,7 +18,11 @@ backup_data["server"] = teamspeak.server_info(tn)
 backup_data["bans"] = teamspeak.ban_list(tn)
 
 # Server Groups
-backup_data["server_groups"] = teamspeak.server_group_list(tn)
+server_groups = teamspeak.server_group_list(tn)
+for server_group in server_groups:
+    server_group["permissions"] = teamspeak.server_group_permission_list(tn, server_group["sgid"], True)
+
+backup_data["server_groups"] = server_groups
 
 # Channel Groups
 # backup_data["channel_groups"] = None
