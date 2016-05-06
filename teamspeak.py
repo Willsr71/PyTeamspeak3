@@ -138,3 +138,14 @@ def binding_list(tn):
 
 def server_info(tn):
     return parse_objects(send_command(tn, "serverinfo"))
+
+
+def server_group_list(tn):
+    groups = []
+
+    group_listings = parse_list(send_command(tn, "servergrouplist"))
+
+    for group_listing in group_listings:
+        groups.append(parse_objects(group_listing))
+
+    return groups
