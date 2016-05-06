@@ -12,7 +12,7 @@ tn = teamspeak.connect(config["host"], config["queryport"], config["port"], conf
 backup_data["server"] = teamspeak.server_info(tn)
 
 # Channels
-# backup_data["channels"] = None
+backup_data["channels"] = teamspeak.channel_list(tn)
 
 # Bans
 backup_data["bans"] = teamspeak.ban_list(tn)

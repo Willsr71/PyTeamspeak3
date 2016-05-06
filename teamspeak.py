@@ -160,6 +160,16 @@ def channel_group_permission_list(tn, channel_group_id, use_string_id=True):
     return permissions
 
 
+def channel_list(tn):
+    channel_listings = parse_list(send_command(tn, "channellist"))
+
+    channels = []
+    for channel_listing in channel_listings:
+        channels.append(parse_objects(channel_listing))
+
+    return channels
+
+
 def server_info(tn):
     return parse_objects(send_command(tn, "serverinfo"))
 
