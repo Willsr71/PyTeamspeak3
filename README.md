@@ -16,3 +16,4 @@ A variety of Python utilities for TeamSpeak ServerQuery
 |user|ServerQuery user. Must have permissions|
 |password|ServerQuery user password|
 |json_file_indents|Whether to indent the output file or not|
+|use_permission_string_ids|Whether to use string ids for permissions instead or numeric ids|

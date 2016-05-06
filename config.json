@@ -4,5 +4,6 @@
   "port": "9987",
   "user": "ServerQuery user",
   "password": "ServerQuery password",
-  "json_file_indents": true
+  "json_file_indents": true,
+  "use_permission_string_ids": true
 }

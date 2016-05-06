@@ -20,7 +20,7 @@ backup_data["bans"] = teamspeak.ban_list(tn)
 # Server Groups
 server_groups = teamspeak.server_group_list(tn)
 for server_group in server_groups:
-    server_group["permissions"] = teamspeak.server_group_permission_list(tn, server_group["sgid"], True)
+    server_group["permissions"] = teamspeak.server_group_permission_list(tn, server_group["sgid"], config["use_permission_string_ids"])
 
 backup_data["server_groups"] = server_groups
 
