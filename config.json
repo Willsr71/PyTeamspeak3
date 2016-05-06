@@ -1,0 +1,8 @@
+{
+  "host": "xxx.xxx.xxx.xxx",
+  "queryport": "10011",
+  "port": "9987",
+  "user": "ServerQuery user",
+  "password": "ServerQuery password",
+  "delay": 0
+}
