@@ -17,24 +17,31 @@ try:
         buf = teamspeak.server_edit(tn, {server_info_bit: backup_data["server"][server_info_bit]})
     # print(buf)
 except AttributeError:
-    print("fuck")
-    var = None
+    print("No server info backup data found, skipping...")
 
 # Channels
-if hasattr(backup_data, "channels"):
+try:
     backup_data["channels"]
+except AttributeError:
+    print("No channels backup data found, skipping...")
 
 # Bans
-if hasattr(backup_data, "bans"):
+try:
     backup_data["bans"]
+except AttributeError:
+    print("No bans backup data found, skipping...")
 
 # Server Groups
-if hasattr(backup_data, "server_groups"):
+try:
     backup_data["server_groups"]
+except AttributeError:
+    print("No server groups backup data found, skipping...")
 
 # Channel Groups
-if hasattr(backup_data, "channel_groups"):
+try:
     backup_data["channel_groups"]
+except AttributeError:
+    print("No channel groups backup data found, skipping...")
 
 teamspeak.quit(tn)
 tn.close()
