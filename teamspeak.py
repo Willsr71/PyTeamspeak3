@@ -159,6 +159,10 @@ def binding_list(tn):
     return send_command(tn, "bindinglist")
 
 
+def channel_create(tn, channel_name, paramaters={}):
+    return send_command(tn, "channelcreate channel_name=" + channel_name + deparse_objects(paramaters))
+
+
 def channel_delete(tn, channel_id, force_delete=True):
     if force_delete:
         force_delete = "1"

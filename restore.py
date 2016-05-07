@@ -20,8 +20,11 @@ except AttributeError:
 
 # Channels
 try:
+    teamspeak.channel_create(tn, "TemporaryChannelForBackups")
+
     for channel in teamspeak.channel_list(tn):
-        teamspeak.channel_delete(tn, channel["cid"], True)
+        print(channel)
+        # teamspeak.channel_delete(tn, channel["cid"], True)
 
     for channel in backup_data["channels"]:
         var = None

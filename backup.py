@@ -21,7 +21,14 @@ if config["backup"]["server_info"]["backup"]:
 
 # Channels
 if config["backup"]["channels"]["backup"]:
-    backup_data["channels"] = teamspeak.channel_list(tn)
+    channels = teamspeak.channel_list(tn)
+
+    # for channel in channels:
+    #    print(channel)
+    #    for excluded_attribute in config["backup"]["channels"]["excludes_attributes"]:
+    #        delattr(channel, "total_clients")
+
+    backup_data["channels"] = channels
 
 # Bans
 if config["backup"]["bans"]["backup"]:

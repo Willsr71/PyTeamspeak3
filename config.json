@@ -47,7 +47,10 @@
     },
     "channels": {
       "backup": true,
-      "excludes": []
+      "excludes": [],
+      "excludes_attributes": [
+        "total_clients"
+      ]
     },
     "bans": {
       "backup": true,
