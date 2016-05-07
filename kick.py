@@ -24,7 +24,7 @@ for clientarr in clientsarr:
 
     clients.append(client)
 
-buf = teamspeak.send_command(tn, "clientkick reasonid=4 reasonmsg=Die\shuman. clid=" + get_client_by_name(sys.argv[1])["clid"])
+buf = teamspeak.send_command(tn, "clientkick reasonid=5 reasonmsg=Die\shuman. clid=" + get_client_by_name(sys.argv[1])["clid"])
 
 teamspeak.quit(tn)
 tn.close()

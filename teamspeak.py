@@ -1,13 +1,15 @@
+import sys
 import json
 import os.path
 import telnetlib
 
 
 def get_json_file(file_name):
-    if not os.path.isfile(file_name):
-        open(file_name, 'w').write("{}")
-
-    return json.loads(open(file_name).read())
+    try:
+        return json.loads(open(file_name).read())
+    except FileNotFoundError:
+        print("File does not exist")
+        sys.exit(1)
 
 
 def set_json_file(file_name, json_arr, indents):
@@ -25,6 +27,17 @@ def send_command(tn, command):
     message = ""
     while ("error id=" not in message) and ("msg=" not in message):
         message += tn.read_until(b"\n\r").decode('ascii')
+
+    # Because of some rare cases
+    message = message.replace("\n\r", "")
+
+    error_id = int(message[message.index("error id=") + 9:message.index("msg=") - 1])
+    error_message = message[message.index("msg=") + 4:]
+
+    # print(command)
+    if not error_id == 0:
+        print(command)
+        print("error id=" + str(error_id) + " msg=" + error_message)
 
     return message[:message.index("error id=")]
 
@@ -62,6 +75,17 @@ def parse_list(sq_list):
         json_list.append(item)
 
     return json_list
+
+
+def deparse_objects(json_objects):
+    sq_objects = ""
+
+    for json_object in json_objects:
+        if json_objects[json_object] is not None:
+            sq_objects += " " + json_object + "=" + json_objects[json_object]
+
+    return sq_objects
+
 
 ###############################
 #                             #
@@ -170,8 +194,8 @@ def channel_list(tn):
     return channels
 
 
-def server_info(tn):
-    return parse_objects(send_command(tn, "serverinfo"))
+def server_edit(tn, paramaters):
+    return send_command(tn, "serveredit" + deparse_objects(paramaters))
 
 
 def server_group_list(tn):
@@ -197,3 +221,7 @@ def server_group_permission_list(tn, server_group_id, use_string_id=True):
         permissions.append(parse_objects(permission_listing))
 
     return permissions
+
+
+def server_info(tn):
+    return parse_objects(send_command(tn, "serverinfo"))
