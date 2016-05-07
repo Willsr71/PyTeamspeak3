@@ -58,11 +58,23 @@
     },
     "server_groups": {
       "backup": true,
-      "excludes": []
+      "excludes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
     },
     "channel_groups": {
       "backup": true,
-      "excludes": []
+      "excludes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
     }
   },
   "json": {

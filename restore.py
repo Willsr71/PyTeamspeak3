@@ -14,14 +14,14 @@ backup_data = teamspeak.get_json_file(sys.argv[1])
 # Server Info
 try:
     for server_info_bit in backup_data["server"]:
-        buf = teamspeak.server_edit(tn, {server_info_bit: backup_data["server"][server_info_bit]})
-    # print(buf)
+        teamspeak.server_edit(tn, {server_info_bit: backup_data["server"][server_info_bit]})
 except AttributeError:
     print("No server info backup data found, skipping...")
 
 # Channels
 try:
-    backup_data["channels"]
+    for channel in backup_data["channels"]:
+        var = None
 except AttributeError:
     print("No channels backup data found, skipping...")
 

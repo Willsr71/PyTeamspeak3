@@ -5,7 +5,7 @@ import time
 
 timestamp = round(time.time())
 backup_data = {}
-config = teamspeak.get_json_file("configprelude.json")
+config = teamspeak.get_json_file("configenjin.json")
 tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "TSBackup")
 
 # Server Info
@@ -31,7 +31,8 @@ if config["backup"]["bans"]["backup"]:
 if config["backup"]["server_groups"]["backup"]:
     server_groups = teamspeak.server_group_list(tn)
     for server_group in server_groups:
-        server_group["permissions"] = teamspeak.server_group_permission_list(tn, server_group["sgid"], config["json"]["use_permission_string_ids"])
+        if server_group["sgid"] not in config["backup"]["server_groups"]["excludes"]:
+            server_group["permissions"] = teamspeak.server_group_permission_list(tn, server_group["sgid"], config["json"]["use_permission_string_ids"])
 
     backup_data["server_groups"] = server_groups
 
@@ -39,7 +40,8 @@ if config["backup"]["server_groups"]["backup"]:
 if config["backup"]["channel_groups"]["backup"]:
     channel_groups = teamspeak.channel_group_list(tn)
     for channel_group in channel_groups:
-        channel_group["permissions"] = teamspeak.channel_group_permission_list(tn, channel_group["cgid"], config["json"]["use_permission_string_ids"])
+        if channel_group["cgid"] not in config["backup"]["server_groups"]["excludes"]:
+            channel_group["permissions"] = teamspeak.channel_group_permission_list(tn, channel_group["cgid"], config["json"]["use_permission_string_ids"])
 
     backup_data["channel_groups"] = channel_groups
 
