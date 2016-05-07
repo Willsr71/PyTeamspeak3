@@ -32,8 +32,6 @@
         "virtualserver_log_filetransfer",
         "virtualserver_priority_speaker_dimm_modificator",
         "virtualserver_antiflood_points_needed_ip_block",
-        "virtualserver_default_server_group",
-        "virtualserver_default_channel_admin_group",
         "virtualserver_needed_identity_security_level",
         "virtualserver_antiflood_points_needed_command_block",
         "virtualserver_complain_autoban_count",
@@ -44,8 +42,7 @@
         "virtualserver_autostart",
         "virtualserver_hostmessage_mode",
         "virtualserver_complain_remove_time",
-        "virtualserver_hostbutton_tooltip",
-        "virtualserver_default_channel_group"
+        "virtualserver_hostbutton_tooltip"
       ]
     },
     "channels": {

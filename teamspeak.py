@@ -59,7 +59,7 @@ def parse_objects(sq_objects):
     sq_objects = sq_objects.split(" ")
     for obj in sq_objects:
         if "=" in obj:
-            obj = obj.split("=")
+            obj = obj.split("=", 1)
             json_objects[obj[0]] = obj[1]
         else:
             json_objects[obj] = None
@@ -157,6 +157,15 @@ def ban_list(tn):
 
 def binding_list(tn):
     return send_command(tn, "bindinglist")
+
+
+def channel_delete(tn, channel_id, force_delete=True):
+    if force_delete:
+        force_delete = "1"
+    else:
+        force_delete = "0"
+
+    send_command(tn, "channeldelete cid=" + channel_id + " force=" + force_delete)
 
 
 def channel_group_list(tn):
