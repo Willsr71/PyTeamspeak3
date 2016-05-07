@@ -23,10 +23,9 @@ if config["backup"]["server_info"]["backup"]:
 if config["backup"]["channels"]["backup"]:
     channels = teamspeak.channel_list(tn)
 
-    # for channel in channels:
-    #    print(channel)
-    #    for excluded_attribute in config["backup"]["channels"]["excludes_attributes"]:
-    #        delattr(channel, "total_clients")
+    for channel in channels:
+        for excluded_attribute in config["backup"]["channels"]["excludes_attributes"]:
+            del channel[excluded_attribute]
 
     backup_data["channels"] = channels
 
