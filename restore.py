@@ -14,7 +14,8 @@ backup_data = teamspeak.get_json_file(sys.argv[1])
 # Server Info
 try:
     for server_info_bit in backup_data["server"]:
-        teamspeak.server_edit(tn, {server_info_bit: backup_data["server"][server_info_bit]})
+        if backup_data["server"][server_info_bit] is not None:
+            teamspeak.server_edit(tn, {server_info_bit: backup_data["server"][server_info_bit]})
 except AttributeError:
     print("No server info backup data found, skipping...")
 
