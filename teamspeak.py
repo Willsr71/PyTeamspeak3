@@ -3,6 +3,8 @@ import json
 import os.path
 import telnetlib
 
+permissions = []
+
 
 def get_json_file(file_name):
     try:
@@ -31,24 +33,33 @@ def send_command(tn, command):
     # Because of some rare cases
     message = message.replace("\n\r", "")
 
-    error_id = int(message[message.index("error id=") + 9:message.index("msg=") - 1])
-    error_message = message[message.index("msg=") + 4:]
+    status = parse_objects(message[message.index("error id="):])
 
     # print(command)
-    if not error_id == 0:
+    if not status["error_id"] == "0":
         print(command)
-        print("error id=" + str(error_id) + " msg=" + error_message)
+        print(status)
+
+        if "failed_permid" in status:
+            for permission in permissions:
+                if permission["permid"] == status["failed_permid"]:
+                    print(permission["permid"] + "=" + permission["permname"])
+        else:
+            print("Failed to find permission")
 
     return message[:message.index("error id=")]
 
 
 def connect(host, queryport, port, user, password, nickname):
+    global permissions
+
     tn = telnetlib.Telnet(host, queryport)
 
     tn.read_until(b"command.\n\r")
     login(tn, user, password)
     use_port(tn, port)
     send_command(tn, "clientupdate client_nickname=" + nickname)
+    permissions = permission_list(tn)
 
     return tn
 
@@ -57,6 +68,11 @@ def parse_objects(sq_objects):
     json_objects = {}
 
     sq_objects = sq_objects.split(" ")
+    for x in range(0, len(sq_objects) - 1):
+        if sq_objects[x] == "error" and "id=" in sq_objects[x + 1]:
+            sq_objects[x] = sq_objects[x] + "_" + sq_objects[x + 1]
+            sq_objects.pop(x + 1)
+
     for obj in sq_objects:
         if "=" in obj:
             obj = obj.split("=", 1)
@@ -169,7 +185,7 @@ def channel_delete(tn, channel_id, force_delete=True):
     else:
         force_delete = "0"
 
-    send_command(tn, "channeldelete cid=" + channel_id + " force=" + force_delete)
+    return send_command(tn, "channeldelete cid=" + channel_id + " force=" + force_delete)
 
 
 def channel_group_list(tn):
@@ -205,6 +221,25 @@ def channel_list(tn):
         channels.append(parse_objects(channel_listing))
 
     return channels
+
+
+def channel_info(tn, channel_id):
+    return send_command(tn, "channelinfo cid=" + channel_id)
+
+
+def permission_list(tn):
+    permission_listings = parse_list(send_command(tn, "permissionlist"))
+
+    permissions = []
+    for permission_listing in permission_listings:
+        permissions.append(parse_objects(permission_listing))
+
+    return permissions
+
+
+def send_text_message(tn, target_mode, target, message):
+    message = message.replace(" ", "\s")
+    return send_command(tn, "sendtextmessage targetmode=" + str(target_mode) + " target=" + str(target) + " msg=" + message)
 
 
 def server_edit(tn, paramaters):

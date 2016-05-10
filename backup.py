@@ -8,6 +8,8 @@ backup_data = {}
 config = teamspeak.get_json_file("configenjin.json")
 tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "TSBackup")
 
+teamspeak.send_text_message(tn, 3, 1, "Backing up server...")
+
 # Server Info
 if config["backup"]["server_info"]["backup"]:
     server_info = teamspeak.server_info(tn)
@@ -24,6 +26,10 @@ if config["backup"]["channels"]["backup"]:
     channels = teamspeak.channel_list(tn)
 
     for channel in channels:
+        channel_info = teamspeak.parse_objects(teamspeak.channel_info(tn, channel["cid"]))
+        for attribute in channel_info:
+            channel[attribute] = channel_info[attribute]
+
         for excluded_attribute in config["backup"]["channels"]["excludes_attributes"]:
             del channel[excluded_attribute]
 
@@ -52,5 +58,7 @@ if config["backup"]["channel_groups"]["backup"]:
     backup_data["channel_groups"] = channel_groups
 
 file = teamspeak.set_json_file("backup-" + str(timestamp) + ".json", backup_data, config["json"]["use_file_indentation"])
+
+teamspeak.send_text_message(tn, 3, 1, "Done.")
 teamspeak.quit(tn)
 tn.close()

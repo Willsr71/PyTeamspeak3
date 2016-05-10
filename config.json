@@ -16,7 +16,6 @@
         "virtualserver_min_clients_in_channel_before_forced_silence",
         "virtualserver_log_client",
         "virtualserver_log_query",
-        "virtualserver_port",
         "virtualserver_hostbanner_mode",
         "virtualserver_log_permissions",
         "virtualserver_log_channel",

@@ -1,4 +1,5 @@
 import sys
+import time
 import telnetlib
 import teamspeak
 
@@ -21,14 +22,20 @@ except AttributeError:
 
 # Channels
 try:
-    teamspeak.channel_create(tn, "TemporaryChannelForBackups")
+    old_channels = teamspeak.channel_list(tn)
 
-    for channel in teamspeak.channel_list(tn):
-        print(channel)
-        # teamspeak.channel_delete(tn, channel["cid"], True)
+    teamspeak.channel_create(tn, "Temporary channel " + time.time(), {"channel_flag_default": "1"})
+
+    for channel in old_channels:
+        teamspeak.channel_delete(tn, channel["cid"], True)
 
     for channel in backup_data["channels"]:
-        var = None
+        channel_name = channel["channel_name"]
+        del channel["channel_name"]
+        buf = teamspeak.channel_create(tn, channel_name, channel)
+        cid = teamspeak.parse_objects(buf)
+        print(cid)
+
 except AttributeError:
     print("No channels backup data found, skipping...")
 
