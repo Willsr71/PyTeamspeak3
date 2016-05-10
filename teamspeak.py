@@ -91,6 +91,16 @@ def parse_list(sq_list):
     return json_list
 
 
+def parse_object_list(sq_object_list):
+    sq_objects = parse_list(sq_object_list)
+    json_objects = []
+
+    for sq_object in sq_objects:
+        json_objects.append(parse_objects(sq_object))
+
+    return json_objects
+
+
 def deparse_objects(json_objects):
     sq_objects = ""
 
@@ -100,6 +110,16 @@ def deparse_objects(json_objects):
 
     return sq_objects
 
+
+def deparse_object_list(json_list):
+    sq_list = ""
+
+    for json_object in json_list:
+        sq_list += deparse_objects(json_object)[1:] + "|"
+
+    sq_list = sq_list[:-1]
+
+    return sq_list
 
 ###############################
 #                             #
@@ -174,14 +194,7 @@ def binding_list(tn):
 
 
 def channel_add_permission(tn, channel_id, channel_permissions):
-    perms = ""
-
-    for channel_permission in channel_permissions:
-        perms += deparse_objects(channel_permission)[1:] + "|"
-
-    perms = perms[:-1]
-
-    return send_command(tn, "channeladdperm cid=" + channel_id + " " + perms)
+    return send_command(tn, "channeladdperm cid=" + channel_id + " " + deparse_object_list(channel_permissions))
 
 
 def channel_create(tn, channel_name, paramaters={}):
@@ -198,13 +211,7 @@ def channel_delete(tn, channel_id, force_delete=True):
 
 
 def channel_group_list(tn):
-    channel_listings = parse_list(send_command(tn, "channelgrouplist"))
-
-    groups = []
-    for channel_listing in channel_listings:
-        groups.append(parse_objects(channel_listing))
-
-    return groups
+    return parse_object_list(send_command(tn, "channelgrouplist"))
 
 
 def channel_group_permission_list(tn, channel_group_id, use_string_id=True):
@@ -213,23 +220,11 @@ def channel_group_permission_list(tn, channel_group_id, use_string_id=True):
     else:
         use_string_id = ""
 
-    permission_listings = parse_list(send_command(tn, "channelgrouppermlist cgid=" + channel_group_id + use_string_id))
-
-    perms = []
-    for permission_listing in permission_listings:
-        perms.append(parse_objects(permission_listing))
-
-    return perms
+    return parse_object_list(send_command(tn, "channelgrouppermlist cgid=" + channel_group_id + use_string_id))
 
 
 def channel_list(tn):
-    channel_listings = parse_list(send_command(tn, "channellist"))
-
-    channels = []
-    for channel_listing in channel_listings:
-        channels.append(parse_objects(channel_listing))
-
-    return channels
+    return parse_object_list(send_command(tn, "channellist"))
 
 
 def channel_info(tn, channel_id):
@@ -242,23 +237,11 @@ def channel_permission_list(tn, channel_id, use_string_id):
     else:
         use_string_id = ""
 
-    permission_listings = parse_list(send_command(tn, "channelpermlist cid=" + channel_id + use_string_id))
-
-    perms = []
-    for permission_listing in permission_listings:
-        perms.append(parse_objects(permission_listing))
-
-    return perms
+    return parse_object_list(send_command(tn, "channelpermlist cid=" + channel_id + use_string_id))
 
 
 def permission_list(tn):
-    permission_listings = parse_list(send_command(tn, "permissionlist"))
-
-    perms = []
-    for permission_listing in permission_listings:
-        perms.append(parse_objects(permission_listing))
-
-    return perms
+    return parse_object_list(send_command(tn, "permissionlist"))
 
 
 def send_text_message(tn, target_mode, target, message):
@@ -271,13 +254,7 @@ def server_edit(tn, paramaters):
 
 
 def server_group_list(tn):
-    group_listings = parse_list(send_command(tn, "servergrouplist"))
-
-    groups = []
-    for group_listing in group_listings:
-        groups.append(parse_objects(group_listing))
-
-    return groups
+    return parse_object_list(send_command(tn, "servergrouplist"))
 
 
 def server_group_permission_list(tn, server_group_id, use_string_id=True):
@@ -286,13 +263,7 @@ def server_group_permission_list(tn, server_group_id, use_string_id=True):
     else:
         use_string_id = ""
 
-    permission_listings = parse_list(send_command(tn, "servergrouppermlist sgid=" + server_group_id + use_string_id))
-
-    permissions = []
-    for permission_listing in permission_listings:
-        permissions.append(parse_objects(permission_listing))
-
-    return permissions
+    return parse_object_list(send_command(tn, "servergrouppermlist sgid=" + server_group_id + use_string_id))
 
 
 def server_info(tn):
