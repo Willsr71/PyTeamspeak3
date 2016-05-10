@@ -29,7 +29,8 @@ try:
     temp_channel = teamspeak.parse_objects(buf)["cid"]
 
     for channel in old_channels:
-        teamspeak.channel_delete(tn, channel["cid"], True)
+        if channel["pid"] == "0":
+            teamspeak.channel_delete(tn, channel["cid"], True)
 
     for channel in backup_data["channels"]:
         channel_name = channel["channel_name"]
