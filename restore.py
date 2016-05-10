@@ -10,6 +10,7 @@ if len(sys.argv) != 2:
 config = teamspeak.get_json_file("configprelude.json")
 tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "TSBackup")
 
+teamspeak.send_text_message(tn, 3, 1, "Restoring server from backup...")
 backup_data = teamspeak.get_json_file(sys.argv[1])
 
 # Server Info
@@ -24,17 +25,38 @@ except AttributeError:
 try:
     old_channels = teamspeak.channel_list(tn)
 
-    teamspeak.channel_create(tn, "Temporary channel " + time.time(), {"channel_flag_default": "1"})
+    buf = teamspeak.channel_create(tn, "Temporary\schannel\s" + str(time.time()), {"channel_flag_permanent": "1", "channel_flag_default": "1"})
+    temp_channel = teamspeak.parse_objects(buf)["cid"]
 
     for channel in old_channels:
         teamspeak.channel_delete(tn, channel["cid"], True)
 
     for channel in backup_data["channels"]:
         channel_name = channel["channel_name"]
+        old_cid = channel["cid"]
         del channel["channel_name"]
+        del channel["cid"]
+
         buf = teamspeak.channel_create(tn, channel_name, channel)
-        cid = teamspeak.parse_objects(buf)
-        print(cid)
+        channel_data = teamspeak.parse_objects(buf)
+
+        if "cid" not in channel_data:
+            continue
+
+        cid = int(channel_data["cid"])
+
+        for c in backup_data["channels"]:
+            if "cid" not in c:
+                continue
+
+            if old_cid == c["channel_order"]:
+                c["channel_order"] = cid
+
+            if old_cid == c["cpid"]:
+                c["cpid"] = cid
+
+    teamspeak.channel_delete(tn, temp_channel, True)
+
 
 except AttributeError:
     print("No channels backup data found, skipping...")
@@ -57,5 +79,6 @@ try:
 except AttributeError:
     print("No channel groups backup data found, skipping...")
 
+teamspeak.send_text_message(tn, 3, 1, "Done")
 teamspeak.quit(tn)
 tn.close()

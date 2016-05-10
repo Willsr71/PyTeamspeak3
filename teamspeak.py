@@ -44,8 +44,6 @@ def send_command(tn, command):
             for permission in permissions:
                 if permission["permid"] == status["failed_permid"]:
                     print(permission["permid"] + "=" + permission["permname"])
-        else:
-            print("Failed to find permission")
 
     return message[:message.index("error id=")]
 
@@ -98,7 +96,7 @@ def deparse_objects(json_objects):
 
     for json_object in json_objects:
         if json_objects[json_object] is not None:
-            sq_objects += " " + json_object + "=" + json_objects[json_object]
+            sq_objects += " " + json_object + "=" + str(json_objects[json_object])
 
     return sq_objects
 

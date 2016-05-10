@@ -33,6 +33,10 @@ if config["backup"]["channels"]["backup"]:
         for excluded_attribute in config["backup"]["channels"]["excludes_attributes"]:
             del channel[excluded_attribute]
 
+        for changed_attribute in config["backup"]["channels"]["changes_attributes"]:
+            channel[changed_attribute["to"]] = channel[changed_attribute["from"]]
+            del channel[changed_attribute["from"]]
+
     backup_data["channels"] = channels
 
 # Bans

@@ -41,14 +41,28 @@
         "virtualserver_autostart",
         "virtualserver_hostmessage_mode",
         "virtualserver_complain_remove_time",
-        "virtualserver_hostbutton_tooltip"
+        "virtualserver_hostbutton_tooltip",
+        "virtualserver_password"
       ]
     },
     "channels": {
       "backup": true,
       "excludes": [],
       "excludes_attributes": [
-        "total_clients"
+        "total_clients",
+        "channel_filepath",
+        "seconds_empty",
+        "channel_delete_delay",
+        "channel_icon_id",
+        "channel_forced_silence",
+        "channel_codec_is_unencrypted",
+        "channel_password"
+      ],
+      "changes_attributes": [
+        {
+          "from": "pid",
+          "to": "cpid"
+        }
       ]
     },
     "bans": {
