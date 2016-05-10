@@ -37,6 +37,8 @@ if config["backup"]["channels"]["backup"]:
             channel[changed_attribute["to"]] = channel[changed_attribute["from"]]
             del channel[changed_attribute["from"]]
 
+        channel["permissions"] = teamspeak.channel_permission_list(tn, channel["cid"], config["json"]["use_permission_string_ids"])
+
     backup_data["channels"] = channels
 
 # Bans

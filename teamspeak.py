@@ -173,6 +173,17 @@ def binding_list(tn):
     return send_command(tn, "bindinglist")
 
 
+def channel_add_permission(tn, channel_id, channel_permissions):
+    perms = ""
+
+    for channel_permission in channel_permissions:
+        perms += deparse_objects(channel_permission)[1:] + "|"
+
+    perms = perms[:-1]
+
+    return send_command(tn, "channeladdperm cid=" + channel_id + " " + perms)
+
+
 def channel_create(tn, channel_name, paramaters={}):
     return send_command(tn, "channelcreate channel_name=" + channel_name + deparse_objects(paramaters))
 
@@ -204,11 +215,11 @@ def channel_group_permission_list(tn, channel_group_id, use_string_id=True):
 
     permission_listings = parse_list(send_command(tn, "channelgrouppermlist cgid=" + channel_group_id + use_string_id))
 
-    permissions = []
+    perms = []
     for permission_listing in permission_listings:
-        permissions.append(parse_objects(permission_listing))
+        perms.append(parse_objects(permission_listing))
 
-    return permissions
+    return perms
 
 
 def channel_list(tn):
@@ -225,14 +236,29 @@ def channel_info(tn, channel_id):
     return send_command(tn, "channelinfo cid=" + channel_id)
 
 
+def channel_permission_list(tn, channel_id, use_string_id):
+    if use_string_id:
+        use_string_id = " -permsid"
+    else:
+        use_string_id = ""
+
+    permission_listings = parse_list(send_command(tn, "channelpermlist cid=" + channel_id + use_string_id))
+
+    perms = []
+    for permission_listing in permission_listings:
+        perms.append(parse_objects(permission_listing))
+
+    return perms
+
+
 def permission_list(tn):
     permission_listings = parse_list(send_command(tn, "permissionlist"))
 
-    permissions = []
+    perms = []
     for permission_listing in permission_listings:
-        permissions.append(parse_objects(permission_listing))
+        perms.append(parse_objects(permission_listing))
 
-    return permissions
+    return perms
 
 
 def send_text_message(tn, target_mode, target, message):

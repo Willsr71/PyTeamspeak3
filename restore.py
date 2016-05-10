@@ -34,8 +34,11 @@ try:
 
     for channel in backup_data["channels"]:
         channel_name = channel["channel_name"]
+        channel_permissions = channel["permissions"]
         old_cid = channel["cid"]
+
         del channel["channel_name"]
+        del channel["permissions"]
         del channel["cid"]
 
         buf = teamspeak.channel_create(tn, channel_name, channel)
@@ -45,6 +48,12 @@ try:
             continue
 
         cid = int(channel_data["cid"])
+
+        for channel_permission in channel_permissions:
+            if "cid" in channel_permission:
+                channel_permission["cid"] = channel_data["cid"]
+
+        teamspeak.channel_add_permission(tn, channel_data["cid"], channel_permissions)
 
         for c in backup_data["channels"]:
             if "cid" not in c:
