@@ -44,7 +44,12 @@ if config["backup"]["channels"]["backup"]:
 
 # Bans
 if config["backup"]["bans"]["backup"]:
-    backup_data["bans"] = teamspeak.ban_list(tn)
+    bans = teamspeak.ban_list(tn)
+    for ban in bans:
+        for excluded_attribute in config["backup"]["bans"]["excludes_attributes"]:
+            del ban[excluded_attribute]
+
+    backup_data["bans"] = bans
 
 # Server Groups
 if config["backup"]["server_groups"]["backup"]:

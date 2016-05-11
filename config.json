@@ -67,7 +67,9 @@
     },
     "bans": {
       "backup": true,
-      "excludes": []
+      "excludes_attributes": [
+        "banid"
+      ]
     },
     "server_groups": {
       "backup": true,

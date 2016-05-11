@@ -24,7 +24,7 @@ except AttributeError:
     print("No server info backup data found, skipping...")
 
 # Channels
-try:
+if "channels" in backup_data:
     old_channels = teamspeak.channel_list(tn)
 
     buf = teamspeak.channel_create(tn, "Temporary\schannel\s" + str(time.time()), {"channel_flag_permanent": "1", "channel_flag_default": "1"})
@@ -70,25 +70,28 @@ try:
     teamspeak.channel_delete(tn, temp_channel, True)
 
 
-except AttributeError:
+else:
     print("No channels backup data found, skipping...")
 
 # Bans
-try:
-    backup_data["bans"]
-except AttributeError:
+if "bans" in backup_data:
+    teamspeak.ban_delete_all(tn)
+
+    for ban in backup_data["bans"]:
+        teamspeak.ban_add(tn, ban["ip"], ban["name"], ban["uid"], ban["duration"], ban["reason"])
+else:
     print("No bans backup data found, skipping...")
 
 # Server Groups
-try:
-    backup_data["server_groups"]
-except AttributeError:
+if "server_groups" in backup_data:
+    var = None
+else:
     print("No server groups backup data found, skipping...")
 
 # Channel Groups
-try:
-    backup_data["channel_groups"]
-except AttributeError:
+if "channel_groups" in backup_data:
+    var = None
+else:
     print("No channel groups backup data found, skipping...")
 
 teamspeak.send_text_message(tn, 3, 1, "Done. Restore took " + str(time.time() - timestamp) + " seconds")
