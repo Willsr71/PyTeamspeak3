@@ -8,8 +8,6 @@ if len(sys.argv) != 2:
     print("Usage: python restore.py <backup file>")
     sys.exit(1)
 
-timestamp = time.time()
-
 print_line("> Loading config...")
 config = teamspeak.get_json_file("configprelude.json")
 print_line(colors.GREEN + " Done.\n" + colors.END)
@@ -24,6 +22,8 @@ print_line(colors.GREEN + " Done.\n" + colors.END)
 
 if config["announce_messages"]:
     teamspeak.send_text_message(tn, 3, 1, "Restoring server from backup...")
+
+start_timestamp = time.time()
 
 # Server Info
 print_line("> Restoring server info...")
@@ -45,7 +45,7 @@ print_line("> Restoring channels...")
 if "channels" in backup_data:
     old_channels = teamspeak.channel_list(tn)
 
-    buf = teamspeak.channel_create(tn, "Temporary\schannel\s" + str(time.time()), {"channel_flag_permanent": "1", "channel_flag_default": "1"})
+    buf = teamspeak.channel_create(tn, "Temporary\schannel\s" + str(start_timestamp), {"channel_flag_permanent": "1", "channel_flag_default": "1"})
     temp_channel = teamspeak.parse_objects(buf)["cid"]
 
     poscounter = 0
@@ -131,8 +131,11 @@ if "channel_groups" in backup_data:
 else:
     print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
+finished_timestamp = time.time()
+time_taken = round(finished_timestamp - start_timestamp, 3)
+
 if config["announce_messages"]:
-    teamspeak.send_text_message(tn, 3, 1, "Done. Restore took " + str(time.time() - timestamp) + " seconds")
+    teamspeak.send_text_message(tn, 3, 1, "Done. Restore took " + str(time_taken) + " seconds")
 
 
 print_line("> Disconnecting...")
@@ -140,5 +143,4 @@ teamspeak.quit(tn)
 tn.close()
 print_line(colors.GREEN + " Done.\n" + colors.END)
 
-finished_timestamp = time.time()
-print("\nRestore took", finished_timestamp - timestamp, "seconds")
+print("\nRestore took " + str(time_taken) + " seconds")

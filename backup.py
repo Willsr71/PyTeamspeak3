@@ -4,8 +4,6 @@ import teamspeak
 import time
 from util import print_line, colors
 
-timestamp = time.time()
-
 backup_data = {}
 
 print_line("> Loading Config...")
@@ -18,6 +16,8 @@ print_line(colors.GREEN + " Done.\n" + colors.END)
 
 if config["announce_messages"]:
     teamspeak.send_text_message(tn, 3, 1, "Backing up server...")
+
+start_timestamp = time.time()
 
 # Server Info
 print_line("> Backing up server info...")
@@ -125,15 +125,17 @@ if config["backup"]["channel_groups"]["backup"]:
 else:
     print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
-file = teamspeak.set_json_file("backup-" + str(round(timestamp)) + ".json", backup_data, config["json"]["use_file_indentation"])
+file = teamspeak.set_json_file("backup-" + str(round(start_timestamp)) + ".json", backup_data, config["json"]["use_file_indentation"])
+
+finished_timestamp = time.time()
+time_taken = round(finished_timestamp - start_timestamp, 3)
 
 if config["announce_messages"]:
-    teamspeak.send_text_message(tn, 3, 1, "Done. Backup took " + str(time.time() - timestamp) + " seconds")
+    teamspeak.send_text_message(tn, 3, 1, "Done. Backup took " + str(time_taken) + " seconds")
 
 print_line("> Disconnecting...")
 teamspeak.quit(tn)
 tn.close()
 print_line(colors.GREEN + " Done.\n" + colors.END)
 
-finished_timestamp = time.time()
-print("\nBackup took", finished_timestamp - timestamp, "seconds")
+print("\nBackup took " + str(time_taken) + " seconds")

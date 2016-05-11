@@ -42,8 +42,7 @@
         "virtualserver_autostart",
         "virtualserver_hostmessage_mode",
         "virtualserver_complain_remove_time",
-        "virtualserver_hostbutton_tooltip",
-        "virtualserver_password"
+        "virtualserver_hostbutton_tooltip"
       ]
     },
     "channels": {
