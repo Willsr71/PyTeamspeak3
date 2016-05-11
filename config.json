@@ -1,9 +1,9 @@
 {
-  "host": "xxx.xxx.xxx.xxx",
+  "host": "127.0.0.1",
   "queryport": "10011",
   "port": "9987",
-  "user": "ServerQuery user",
-  "password": "ServerQuery password",
+  "user": "serveradmin",
+  "password": "a2c4e6",
   "announce_messages": true,
   "backup": {
     "server_info": {
