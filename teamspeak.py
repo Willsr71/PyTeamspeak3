@@ -37,6 +37,7 @@ def send_command(tn, command):
 
     # print(command)
     if not status["error_id"] == "0":
+        print("\n")
         print(command)
         print(status)
 
@@ -44,6 +45,8 @@ def send_command(tn, command):
             for permission in permissions:
                 if permission["permid"] == status["failed_permid"]:
                     print(permission["permid"] + "=" + permission["permname"])
+
+        print("\n")
 
     return message[:message.index("error id=")]
 

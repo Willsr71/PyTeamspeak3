@@ -2,6 +2,7 @@ import sys
 import time
 import telnetlib
 import teamspeak
+from util import print_line, colors
 
 if len(sys.argv) != 2:
     print("Usage: python restore.py <backup file>")
@@ -9,32 +10,59 @@ if len(sys.argv) != 2:
 
 timestamp = time.time()
 
+print_line("> Loading config...")
 config = teamspeak.get_json_file("configprelude.json")
-tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "TSBackup")
+print_line(colors.GREEN + " Done.\n" + colors.END)
 
-teamspeak.send_text_message(tn, 3, 1, "Restoring server from backup...")
+print_line("> Loading backup file...")
 backup_data = teamspeak.get_json_file(sys.argv[1])
+print_line(colors.GREEN + " Done.\n" + colors.END)
+
+print_line("> Connecting...")
+tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "TSBackup")
+print_line(colors.GREEN + " Done.\n" + colors.END)
+
+if config["announce_messages"]:
+    teamspeak.send_text_message(tn, 3, 1, "Restoring server from backup...")
 
 # Server Info
-try:
+print_line("> Restoring server info...")
+if "server" in backup_data:
+    poscounter = 0
     for server_info_bit in backup_data["server"]:
+        poscounter += 1
+        print_line("\r> Restoring server info... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(backup_data["server"])) + ")" + colors.END)
+
         if backup_data["server"][server_info_bit] is not None:
             teamspeak.server_edit(tn, {server_info_bit: backup_data["server"][server_info_bit]})
-except AttributeError:
-    print("No server info backup data found, skipping...")
+
+    print_line(colors.GREEN + " Done.\n" + colors.END)
+else:
+    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
 # Channels
+print_line("> Restoring channels...")
 if "channels" in backup_data:
     old_channels = teamspeak.channel_list(tn)
 
     buf = teamspeak.channel_create(tn, "Temporary\schannel\s" + str(time.time()), {"channel_flag_permanent": "1", "channel_flag_default": "1"})
     temp_channel = teamspeak.parse_objects(buf)["cid"]
 
+    poscounter = 0
     for channel in old_channels:
+        poscounter += 1
+        print_line("\r> Deleting old channels... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(old_channels)) + ")" + colors.END)
+
         if channel["pid"] == "0":
             teamspeak.channel_delete(tn, channel["cid"], True)
 
+    print_line(colors.GREEN + " Done.\n" + colors.END)
+
+    poscounter = 0
     for channel in backup_data["channels"]:
+        poscounter += 1
+        print_line("\r> Restoring channels... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(backup_data["channels"])) + ")" + colors.END)
+
         channel_name = channel["channel_name"]
         channel_permissions = channel["permissions"]
         old_cid = channel["cid"]
@@ -69,34 +97,48 @@ if "channels" in backup_data:
 
     teamspeak.channel_delete(tn, temp_channel, True)
 
-
+    print_line(colors.GREEN + " Done.\n" + colors.END)
 else:
-    print("No channels backup data found, skipping...")
+    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
 # Bans
+print_line("> Restoring bans...")
 if "bans" in backup_data:
     teamspeak.ban_delete_all(tn)
 
+    poscounter = 0
     for ban in backup_data["bans"]:
+        poscounter += 1
+        print_line("\r> Restoring bans... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(backup_data["bans"])) + ")" + colors.END)
+
         teamspeak.ban_add(tn, ban["ip"], ban["name"], ban["uid"], ban["duration"], ban["reason"])
+
+    print_line(colors.GREEN + " Done.\n" + colors.END)
 else:
-    print("No bans backup data found, skipping...")
+    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
 # Server Groups
+print_line("> Restoring server groups...")
 if "server_groups" in backup_data:
-    var = None
+    print_line(colors.GREEN + " Done.\n" + colors.END)
 else:
-    print("No server groups backup data found, skipping...")
+    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
 # Channel Groups
+print_line("> Restoring channel groups...")
 if "channel_groups" in backup_data:
-    var = None
+    print_line(colors.GREEN + " Done.\n" + colors.END)
 else:
-    print("No channel groups backup data found, skipping...")
+    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
-teamspeak.send_text_message(tn, 3, 1, "Done. Restore took " + str(time.time() - timestamp) + " seconds")
+if config["announce_messages"]:
+    teamspeak.send_text_message(tn, 3, 1, "Done. Restore took " + str(time.time() - timestamp) + " seconds")
+
+
+print_line("> Disconnecting...")
 teamspeak.quit(tn)
 tn.close()
+print_line(colors.GREEN + " Done.\n" + colors.END)
 
 finished_timestamp = time.time()
-print("Restore took", finished_timestamp - timestamp, "seconds")
+print("\nRestore took", finished_timestamp - timestamp, "seconds")

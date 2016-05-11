@@ -4,6 +4,7 @@
   "port": "9987",
   "user": "ServerQuery user",
   "password": "ServerQuery password",
+  "announce_messages": true,
   "backup": {
     "server_info": {
       "backup": true,
