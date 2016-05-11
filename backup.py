@@ -3,7 +3,8 @@ import telnetlib
 import teamspeak
 import time
 
-timestamp = round(time.time())
+timestamp = time.time()
+
 backup_data = {}
 config = teamspeak.get_json_file("configenjin.json")
 tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "TSBackup")
@@ -63,8 +64,11 @@ if config["backup"]["channel_groups"]["backup"]:
 
     backup_data["channel_groups"] = channel_groups
 
-file = teamspeak.set_json_file("backup-" + str(timestamp) + ".json", backup_data, config["json"]["use_file_indentation"])
+file = teamspeak.set_json_file("backup-" + str(round(timestamp)) + ".json", backup_data, config["json"]["use_file_indentation"])
 
-teamspeak.send_text_message(tn, 3, 1, "Done.")
+teamspeak.send_text_message(tn, 3, 1, "Done. Backup took " + str(time.time() - timestamp) + " seconds")
 teamspeak.quit(tn)
 tn.close()
+
+finished_timestamp = time.time()
+print("Backup took", finished_timestamp - timestamp, "seconds")

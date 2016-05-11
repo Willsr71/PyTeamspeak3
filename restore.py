@@ -7,6 +7,8 @@ if len(sys.argv) != 2:
     print("Usage: python restore.py <backup file>")
     sys.exit(1)
 
+timestamp = time.time()
+
 config = teamspeak.get_json_file("configprelude.json")
 tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "TSBackup")
 
@@ -89,6 +91,9 @@ try:
 except AttributeError:
     print("No channel groups backup data found, skipping...")
 
-teamspeak.send_text_message(tn, 3, 1, "Done")
+teamspeak.send_text_message(tn, 3, 1, "Done. Restore took " + str(time.time() - timestamp) + " seconds")
 teamspeak.quit(tn)
 tn.close()
+
+finished_timestamp = time.time()
+print("Restore took", finished_timestamp - timestamp, "seconds")

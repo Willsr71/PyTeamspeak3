@@ -66,3 +66,4 @@ target/
 configenjin.json
 confignoxal.json
 configprelude.json
+backup-*.json
