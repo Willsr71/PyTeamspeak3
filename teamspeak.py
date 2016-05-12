@@ -2,6 +2,7 @@ import sys
 import json
 import os.path
 import telnetlib
+from util import colors
 
 permissions = []
 
@@ -37,7 +38,7 @@ def send_command(tn, command):
 
     # print(command)
     if not status["error_id"] == "0":
-        print("\n")
+        print("\n" + colors.RED)
         print(command)
         print(status)
 
@@ -46,7 +47,7 @@ def send_command(tn, command):
                 if permission["permid"] == status["failed_permid"]:
                     print(permission["permid"] + "=" + permission["permname"])
 
-        print("\n")
+        print(colors.END + "\n")
 
     return message[:message.index("error id=")]
 
@@ -132,19 +133,19 @@ def deparse_object_list(json_list):
 
 
 def login(tn, username, password):
-    return send_command(tn, "login client_login_name=" + username + " client_login_password=" + password)
+    return parse_objects(send_command(tn, "login client_login_name=" + username + " client_login_password=" + password))
 
 
 def logout(tn):
-    return send_command(tn, "logout")
+    return parse_objects(send_command(tn, "logout"))
 
 
 def quit(tn):
-    return send_command(tn, "quit")
+    return parse_objects(send_command(tn, "quit"))
 
 
 def use_port(tn, port):
-    return send_command(tn, "use port=" + port)
+    return parse_objects(send_command(tn, "use port=" + port))
 
 
 def ban_add(tn, ip_regex=None, name_regex=None, uid_regex=None, time_in_seconds=None, ban_reason=None):
@@ -161,7 +162,7 @@ def ban_add(tn, ip_regex=None, name_regex=None, uid_regex=None, time_in_seconds=
     if not ban_reason is None:
         command_string += " banreason=" + ban_reason
 
-    return send_command(tn, "banadd" + command_string)
+    return parse_objects(send_command(tn, "banadd" + command_string))
 
 
 def ban_client(tn, client_id, time_in_seconds=None, ban_reason=None):
@@ -171,37 +172,27 @@ def ban_client(tn, client_id, time_in_seconds=None, ban_reason=None):
     if not ban_reason is None:
         command_string += "banreason" + ban_reason
 
-    return send_command(tn, "banclient" + command_string)
+    return parse_objects(send_command(tn, "banclient" + command_string))
 
 
 def ban_delete_all(tn):
-    return send_command(tn, "bandelall")
+    return parse_objects(send_command(tn, "bandelall"))
 
 
 def ban_delete(tn, ban_id):
-    return send_command(tn, "bandel banid=" + ban_id)
+    return parse_objects(send_command(tn, "bandel banid=" + ban_id))
 
 
 def ban_list(tn):
-    ban_listings = parse_list(send_command(tn, "banlist"))
-
-    bans = []
-    for ban_listing in ban_listings:
-        bans.append(parse_objects(ban_listing))
-
-    return bans
-
-
-def binding_list(tn):
-    return send_command(tn, "bindinglist")
+    return parse_object_list(send_command(tn, "banlist"))
 
 
 def channel_add_permission(tn, channel_id, channel_permissions):
-    return send_command(tn, "channeladdperm cid=" + channel_id + " " + deparse_object_list(channel_permissions))
+    return parse_objects(send_command(tn, "channeladdperm cid=" + channel_id + " " + deparse_object_list(channel_permissions)))
 
 
 def channel_create(tn, channel_name, paramaters={}):
-    return send_command(tn, "channelcreate channel_name=" + channel_name + deparse_objects(paramaters))
+    return parse_objects(send_command(tn, "channelcreate channel_name=" + channel_name + deparse_objects(paramaters)))
 
 
 def channel_delete(tn, channel_id, force_delete=True):
@@ -210,7 +201,7 @@ def channel_delete(tn, channel_id, force_delete=True):
     else:
         force_delete = "0"
 
-    return send_command(tn, "channeldelete cid=" + channel_id + " force=" + force_delete)
+    return parse_objects(send_command(tn, "channeldelete cid=" + channel_id + " force=" + force_delete))
 
 
 def channel_group_list(tn):
@@ -247,6 +238,10 @@ def permission_list(tn):
     return parse_object_list(send_command(tn, "permissionlist"))
 
 
+def permission_reset(tn):
+    return parse_objects(send_command(tn, "permreset"))
+
+
 def send_text_message(tn, target_mode, target, message):
     message = message.replace(" ", "\s")
     return send_command(tn, "sendtextmessage targetmode=" + str(target_mode) + " target=" + str(target) + " msg=" + message)
@@ -254,6 +249,27 @@ def send_text_message(tn, target_mode, target, message):
 
 def server_edit(tn, paramaters):
     return send_command(tn, "serveredit" + deparse_objects(paramaters))
+
+
+def server_group_add(tn, group_name, group_type=1):
+    return parse_objects(send_command(tn, "servergroupadd name=" + group_name + " type=" + str(group_type)))
+
+
+def server_group_add_permission(tn, server_group_id, server_group_permissions):
+    return parse_objects(send_command(tn, "servergroupaddperm sgid=" + server_group_id + " " + deparse_object_list(server_group_permissions)))
+
+
+def server_group_copy(tn, source_group_id, target_group_id, group_name, group_type=1):
+    return parse_objects(send_command(tn, "servergroupcopy ssgid=" + source_group_id + " tsgid=" + target_group_id + " name=" + group_name + " type=" + str(group_type)))
+
+
+def server_group_delete(tn, server_group_id, force_delete=True):
+    if force_delete:
+        force_delete = "1"
+    else:
+        force_delete = "0"
+
+    return parse_objects(send_command(tn, "servergroupdel sgid=" + server_group_id + " force=" + force_delete))
 
 
 def server_group_list(tn):
@@ -271,3 +287,7 @@ def server_group_permission_list(tn, server_group_id, use_string_id=True):
 
 def server_info(tn):
     return parse_objects(send_command(tn, "serverinfo"))
+
+
+def token_use(tn, token):
+    return parse_objects(send_command(tn, "tokenuse token=" + token))

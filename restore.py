@@ -40,13 +40,41 @@ if "server" in backup_data:
 else:
     print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
+# Server Groups
+print_line("> Restoring server groups...")
+if "server_groups" in backup_data:
+
+    buf = teamspeak.permission_reset(tn)
+    teamspeak.set_json_file("token.json", buf, True)
+
+    poscounter = 0
+    for server_group in backup_data["server_groups"]:
+        poscounter += 1
+        print_line("\r> Restoring server groups... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(backup_data["server_groups"])) + ")" + colors.END)
+
+        if server_group["sgid"] in config["backup"]["server_groups"]["excludes"]:
+            continue
+
+        teamspeak.server_group_add(tn, server_group["name"], 1)
+
+    print_line(colors.GREEN + " Done.\n" + colors.END)
+else:
+    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
+
+# Channel Groups
+print_line("> Restoring channel groups...")
+if "channel_groups" in backup_data:
+    print_line(colors.GREEN + " Done.\n" + colors.END)
+else:
+    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
+
 # Channels
 print_line("> Restoring channels...")
 if "channels" in backup_data:
     old_channels = teamspeak.channel_list(tn)
 
-    buf = teamspeak.channel_create(tn, "Temporary\schannel\s" + str(start_timestamp), {"channel_flag_permanent": "1", "channel_flag_default": "1"})
-    temp_channel = teamspeak.parse_objects(buf)["cid"]
+    buf = teamspeak.channel_create(tn, "Temporary\schannel\s" + str(round(start_timestamp)), {"channel_flag_permanent": "1", "channel_flag_default": "1"})
+    temp_channel = buf["cid"]
 
     poscounter = 0
     for channel in old_channels:
@@ -71,8 +99,7 @@ if "channels" in backup_data:
         del channel["permissions"]
         del channel["cid"]
 
-        buf = teamspeak.channel_create(tn, channel_name, channel)
-        channel_data = teamspeak.parse_objects(buf)
+        channel_data = teamspeak.channel_create(tn, channel_name, channel)
 
         if "cid" not in channel_data:
             continue
@@ -104,7 +131,9 @@ else:
 # Bans
 print_line("> Restoring bans...")
 if "bans" in backup_data:
+    print_line("\r> Deleting old bans...")
     teamspeak.ban_delete_all(tn)
+    print_line(colors.GREEN + " Done.\n" + colors.END)
 
     poscounter = 0
     for ban in backup_data["bans"]:
@@ -117,26 +146,11 @@ if "bans" in backup_data:
 else:
     print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
-# Server Groups
-print_line("> Restoring server groups...")
-if "server_groups" in backup_data:
-    print_line(colors.GREEN + " Done.\n" + colors.END)
-else:
-    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
-
-# Channel Groups
-print_line("> Restoring channel groups...")
-if "channel_groups" in backup_data:
-    print_line(colors.GREEN + " Done.\n" + colors.END)
-else:
-    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
-
 finished_timestamp = time.time()
 time_taken = round(finished_timestamp - start_timestamp, 3)
 
 if config["announce_messages"]:
     teamspeak.send_text_message(tn, 3, 1, "Done. Restore took " + str(time_taken) + " seconds")
-
 
 print_line("> Disconnecting...")
 teamspeak.quit(tn)

@@ -39,6 +39,48 @@ if config["backup"]["server_info"]["backup"]:
 else:
     print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
+# Server Groups
+print_line("> Backing up server groups...")
+if config["backup"]["server_groups"]["backup"]:
+    server_groups = teamspeak.server_group_list(tn)
+
+    poscounter = 0
+    for server_group in server_groups:
+        poscounter += 1
+        print_line("\r> Backing up server groups... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(server_groups)) + ")" + colors.END)
+
+        if server_group["sgid"] in config["backup"]["server_groups"]["excludes"]:
+            continue
+
+        server_group["permissions"] = teamspeak.server_group_permission_list(tn, server_group["sgid"], config["json"]["use_permission_string_ids"])
+
+    backup_data["server_groups"] = server_groups
+
+    print_line(colors.GREEN + " Done.\n" + colors.END)
+else:
+    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
+
+# Channel Groups
+print_line("> Backing up channel groups...")
+if config["backup"]["channel_groups"]["backup"]:
+    channel_groups = teamspeak.channel_group_list(tn)
+
+    poscounter = 0
+    for channel_group in channel_groups:
+        poscounter += 1
+        print_line("\r> Backing up channel groups... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(channel_groups)) + ")" + colors.END)
+
+        if channel_group["cgid"] in config["backup"]["server_groups"]["excludes"]:
+            continue
+
+        channel_group["permissions"] = teamspeak.channel_group_permission_list(tn, channel_group["cgid"], config["json"]["use_permission_string_ids"])
+
+    backup_data["channel_groups"] = channel_groups
+
+    print_line(colors.GREEN + " Done.\n" + colors.END)
+else:
+    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
+
 # Channels
 print_line("> Backing up channels...")
 if config["backup"]["channels"]["backup"]:
@@ -82,44 +124,6 @@ if config["backup"]["bans"]["backup"]:
             del ban[excluded_attribute]
 
     backup_data["bans"] = bans
-
-    print_line(colors.GREEN + " Done.\n" + colors.END)
-else:
-    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
-
-# Server Groups
-print_line("> Backing up server groups...")
-if config["backup"]["server_groups"]["backup"]:
-    server_groups = teamspeak.server_group_list(tn)
-
-    poscounter = 0
-    for server_group in server_groups:
-        poscounter += 1
-        print_line("\r> Backing up server groups... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(server_groups)) + ")" + colors.END)
-
-        if server_group["sgid"] not in config["backup"]["server_groups"]["excludes"]:
-            server_group["permissions"] = teamspeak.server_group_permission_list(tn, server_group["sgid"], config["json"]["use_permission_string_ids"])
-
-    backup_data["server_groups"] = server_groups
-
-    print_line(colors.GREEN + " Done.\n" + colors.END)
-else:
-    print_line(colors.YELLOW + " Skipped.\n" + colors.END)
-
-# Channel Groups
-print_line("> Backing up channel groups...")
-if config["backup"]["channel_groups"]["backup"]:
-    channel_groups = teamspeak.channel_group_list(tn)
-
-    poscounter = 0
-    for channel_group in channel_groups:
-        poscounter += 1
-        print_line("\r> Backing up channel groups... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(channel_groups)) + ")" + colors.END)
-
-        if channel_group["cgid"] not in config["backup"]["server_groups"]["excludes"]:
-            channel_group["permissions"] = teamspeak.channel_group_permission_list(tn, channel_group["cgid"], config["json"]["use_permission_string_ids"])
-
-    backup_data["channel_groups"] = channel_groups
 
     print_line(colors.GREEN + " Done.\n" + colors.END)
 else:
