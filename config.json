@@ -73,7 +73,6 @@
     },
     "server_groups": {
       "backup": true,
-      "server_admin_group_id": 6,
       "excludes": [
         "1",
         "2",
@@ -96,75 +95,5 @@
   "json": {
     "use_file_indentation": true,
     "use_permission_string_ids": true
-  },
-  "temp": {
-    "server_group_permissions": [
-      {
-        "permsid": "b_virtualserver_servergroup_list",
-        "permvalue": 1,
-        "permnegated": 0,
-        "permskip": 0
-      },
-      {
-        "permsid": "b_virtualserver_servergroup_permission_list",
-        "permvalue": 1,
-        "permnegated": 0,
-        "permskip": 0
-      },
-      {
-        "permsid": "b_virtualserver_servergroup_client_list",
-        "permvalue": 1,
-        "permnegated": 0,
-        "permskip": 0
-      },
-      {
-        "permsid": "b_virtualserver_servergroup_create",
-        "permvalue": 1,
-        "permnegated": 0,
-        "permskip": 0
-      },
-      {
-        "permsid": "i_group_modify_power",
-        "permvalue": 75,
-        "permnegated": 0,
-        "permskip": 0
-      },
-      {
-        "permsid": "i_group_needed_modify_power",
-        "permvalue": 75,
-        "permnegated": 0,
-        "permskip": 0
-      },
-      {
-        "permsid": "i_group_member_add_power",
-        "permvalue": 75,
-        "permnegated": 0,
-        "permskip": 0
-      },
-      {
-        "permsid": "i_group_needed_member_add_power",
-        "permvalue": 75,
-        "permnegated": 0,
-        "permskip": 0
-      },
-      {
-        "permsid": "i_group_member_remove_power",
-        "permvalue": 75,
-        "permnegated": 0,
-        "permskip": 0
-      },
-      {
-        "permsid": "i_group_needed_member_remove_power",
-        "permvalue": 75,
-        "permnegated": 0,
-        "permskip": 0
-      },
-      {
-        "permsid": "i_permission_modify_power",
-        "permvalue": 75,
-        "permnegated": 0,
-        "permskip": 0
-      }
-    ]
   }
 }

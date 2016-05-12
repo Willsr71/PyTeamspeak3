@@ -47,6 +47,10 @@ if "server_groups" in backup_data:
     buf = teamspeak.permission_reset(tn)
     teamspeak.set_json_file("token.json", buf, True)
 
+    # temporary method of doing this.
+    time.sleep(10)
+    tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "TSBackup")
+
     poscounter = 0
     for server_group in backup_data["server_groups"]:
         poscounter += 1
