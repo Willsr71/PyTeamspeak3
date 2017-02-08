@@ -1,17 +1,16 @@
-import sys
-import telnetlib
-import teamspeak
 import time
+import util
+import teamspeak
 from util import print_line, colors
 
 backup_data = {}
 
 print_line("> Loading Config...")
-config = teamspeak.get_json_file("configenjin.json")
+config = util.get_json_file("config-beast.json")
 print_line(colors.GREEN + " Done.\n" + colors.END)
 
 print_line("> Connecting...")
-tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "TSBackup")
+tn = teamspeak.connect(config["host"], config["queryport"], config["port"], config["user"], config["password"], "TSBackup", rate_limited=config["rate_limited"])
 print_line(colors.GREEN + " Done.\n" + colors.END)
 
 if config["announce_messages"]:
@@ -28,7 +27,8 @@ if config["backup"]["server_info"]["backup"]:
     poscounter = 0
     for info_bit in server_info:
         poscounter += 1
-        print_line("\r> Backing up server info... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(server_info)) + ")" + colors.END)
+        print_line("\r> Backing up server info... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(
+            len(server_info)) + ")" + colors.END)
 
         if info_bit in config["backup"]["server_info"]["includes"]:
             used_server_info[info_bit] = server_info[info_bit]
@@ -47,12 +47,14 @@ if config["backup"]["server_groups"]["backup"]:
     poscounter = 0
     for server_group in server_groups:
         poscounter += 1
-        print_line("\r> Backing up server groups... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(server_groups)) + ")" + colors.END)
+        print_line("\r> Backing up server groups... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(
+            len(server_groups)) + ")" + colors.END)
 
         if server_group["sgid"] in config["backup"]["server_groups"]["excludes"]:
             continue
 
-        server_group["permissions"] = teamspeak.server_group_permission_list(tn, server_group["sgid"], config["json"]["use_permission_string_ids"])
+        server_group["permissions"] = teamspeak.server_group_permission_list(tn, server_group["sgid"], config["json"][
+            "use_permission_string_ids"])
 
     backup_data["server_groups"] = server_groups
 
@@ -68,12 +70,15 @@ if config["backup"]["channel_groups"]["backup"]:
     poscounter = 0
     for channel_group in channel_groups:
         poscounter += 1
-        print_line("\r> Backing up channel groups... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(channel_groups)) + ")" + colors.END)
+        print_line("\r> Backing up channel groups... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(
+            len(channel_groups)) + ")" + colors.END)
 
         if channel_group["cgid"] in config["backup"]["server_groups"]["excludes"]:
             continue
 
-        channel_group["permissions"] = teamspeak.channel_group_permission_list(tn, channel_group["cgid"], config["json"]["use_permission_string_ids"])
+        channel_group["permissions"] = teamspeak.channel_group_permission_list(tn, channel_group["cgid"],
+                                                                               config["json"][
+                                                                                   "use_permission_string_ids"])
 
     backup_data["channel_groups"] = channel_groups
 
@@ -89,7 +94,8 @@ if config["backup"]["channels"]["backup"]:
     poscounter = 0
     for channel in channels:
         poscounter += 1
-        print_line("\r> Backing up channels... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(channels)) + ")" + colors.END)
+        print_line("\r> Backing up channels... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(
+            len(channels)) + ")" + colors.END)
 
         channel_info = teamspeak.parse_objects(teamspeak.channel_info(tn, channel["cid"]))
         for attribute in channel_info:
@@ -102,7 +108,8 @@ if config["backup"]["channels"]["backup"]:
             channel[changed_attribute["to"]] = channel[changed_attribute["from"]]
             del channel[changed_attribute["from"]]
 
-        channel["permissions"] = teamspeak.channel_permission_list(tn, channel["cid"], config["json"]["use_permission_string_ids"])
+        channel["permissions"] = teamspeak.channel_permission_list(tn, channel["cid"],
+                                                                   config["json"]["use_permission_string_ids"])
 
     backup_data["channels"] = channels
 
@@ -118,7 +125,8 @@ if config["backup"]["bans"]["backup"]:
     poscounter = 0
     for ban in bans:
         poscounter += 1
-        print_line("\r> Backing up bans... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(bans)) + ")" + colors.END)
+        print_line(
+            "\r> Backing up bans... " + colors.YELLOW + "(" + str(poscounter) + "/" + str(len(bans)) + ")" + colors.END)
 
         for excluded_attribute in config["backup"]["bans"]["excludes_attributes"]:
             del ban[excluded_attribute]
@@ -129,7 +137,7 @@ if config["backup"]["bans"]["backup"]:
 else:
     print_line(colors.YELLOW + " Skipped.\n" + colors.END)
 
-file = teamspeak.set_json_file("backup-" + str(round(start_timestamp)) + ".json", backup_data, config["json"]["use_file_indentation"])
+file = util.set_json_file("backup-" + str(round(start_timestamp)) + ".json", backup_data, config["json"]["use_file_indentation"])
 
 finished_timestamp = time.time()
 time_taken = round(finished_timestamp - start_timestamp, 3)

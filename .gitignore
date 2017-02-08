@@ -63,7 +63,7 @@ target/
 
 # PyCharm
 .idea/
-configenjin.json
-confignoxal.json
-configprelude.json
+config-*.json
 backup-*.json
+token.json
+groups*.json

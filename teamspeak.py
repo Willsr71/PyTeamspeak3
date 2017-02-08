@@ -1,30 +1,15 @@
-import sys
-import json
-import os.path
+import time
 import telnetlib
 from util import colors
 
+rate_limiting = False
 permissions = []
 
 
-def get_json_file(file_name):
-    try:
-        return json.loads(open(file_name).read())
-    except FileNotFoundError:
-        print("File does not exist")
-        sys.exit(1)
-
-
-def set_json_file(file_name, json_arr, indents):
-    if indents:
-        indents = 2
-    else:
-        indents = None
-
-    return open(file_name, 'w').write(json.dumps(json_arr, indent=indents))
-
-
 def send_command(tn, command):
+    if rate_limiting:
+        time.sleep(0.4)
+
     tn.write((command + "\n").encode('ascii'))
 
     message = ""
@@ -49,17 +34,22 @@ def send_command(tn, command):
 
         print(colors.END + "\n")
 
+    # return message
     return message[:message.index("error id=")]
 
 
-def connect(host, queryport, port, user, password, nickname):
-    global permissions
+def connect(host, queryport, port, user, password, nickname, rate_limited=False):
+    global rate_limiting, permissions
 
+    rate_limiting = rate_limited
     tn = telnetlib.Telnet(host, queryport)
 
     tn.read_until(b"command.\n\r")
     login(tn, user, password)
+
+    use_server_id(tn, port)
     use_port(tn, port)
+
     send_command(tn, "clientupdate client_nickname=" + nickname)
     permissions = permission_list(tn)
 
@@ -91,6 +81,9 @@ def parse_list(sq_list):
     sq_list = sq_list.split("|")
     for item in sq_list:
         json_list.append(item)
+
+    if json_list[0] == '':
+        json_list = []
 
     return json_list
 
@@ -125,6 +118,7 @@ def deparse_object_list(json_list):
 
     return sq_list
 
+
 ###############################
 #                             #
 #  Teamspeak Query functions  #
@@ -142,6 +136,10 @@ def logout(tn):
 
 def quit(tn):
     return parse_objects(send_command(tn, "quit"))
+
+
+def use_server_id(tn, server_id):
+    return parse_objects(send_command(tn, "use sid=" + server_id))
 
 
 def use_port(tn, port):
@@ -255,8 +253,16 @@ def server_group_add(tn, group_name, group_type=1):
     return parse_objects(send_command(tn, "servergroupadd name=" + group_name + " type=" + str(group_type)))
 
 
-def server_group_add_permission(tn, server_group_id, server_group_permissions):
+def server_group_add_client(tn, server_group_id, client_id):
+    return send_command(tn, "servergroupaddclient sgid=" + server_group_id + " cldbid=" + client_id)
+
+
+def server_group_add_permissions(tn, server_group_id, server_group_permissions):
     return parse_objects(send_command(tn, "servergroupaddperm sgid=" + server_group_id + " " + deparse_object_list(server_group_permissions)))
+
+
+def server_group_client_list(tn, server_group_id):
+    return parse_object_list(send_command(tn, "servergroupclientlist sgid=" + server_group_id))
 
 
 def server_group_copy(tn, source_group_id, target_group_id, group_name, group_type=1):

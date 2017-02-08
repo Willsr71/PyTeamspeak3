@@ -1,6 +1,6 @@
 import sys
 import time
-import telnetlib
+import util
 import teamspeak
 from util import print_line, colors
 
@@ -9,11 +9,11 @@ if len(sys.argv) != 2:
     sys.exit(1)
 
 print_line("> Loading config...")
-config = teamspeak.get_json_file("configprelude.json")
+config = util.get_json_file("config-beast.json")
 print_line(colors.GREEN + " Done.\n" + colors.END)
 
 print_line("> Loading backup file...")
-backup_data = teamspeak.get_json_file(sys.argv[1])
+backup_data = util.get_json_file(sys.argv[1])
 print_line(colors.GREEN + " Done.\n" + colors.END)
 
 print_line("> Connecting...")
@@ -45,7 +45,7 @@ print_line("> Restoring server groups...")
 if "server_groups" in backup_data:
 
     buf = teamspeak.permission_reset(tn)
-    teamspeak.set_json_file("token.json", buf, True)
+    util.set_json_file("token.json", buf, True)
 
     # temporary method of doing this.
     time.sleep(10)
